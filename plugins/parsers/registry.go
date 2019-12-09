@@ -175,6 +175,8 @@ func NewParser(config *Config) (Parser, error) {
 			config.DataType, config.DefaultTags)
 	case "influx":
 		parser, err = NewInfluxParser()
+	case "mflx":
+		parser, err = NewMflxParser()
 	case "nagios":
 		parser, err = NewNagiosParser()
 	case "graphite":
@@ -316,6 +318,10 @@ func NewNagiosParser() (Parser, error) {
 func NewInfluxParser() (Parser, error) {
 	handler := influx.NewMetricHandler()
 	return influx.NewParser(handler), nil
+}
+func NewMflxParser() (Parser, error) {
+	handler := influx.NewMetricHandler()
+	return mainflux.NewParser(handler), nil
 }
 
 func NewGraphiteParser(
