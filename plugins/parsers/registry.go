@@ -12,6 +12,7 @@ import (
 	"github.com/influxdata/telegraf/plugins/parsers/graphite"
 	"github.com/influxdata/telegraf/plugins/parsers/grok"
 	"github.com/influxdata/telegraf/plugins/parsers/influx"
+	"github.com/influxdata/telegraf/plugins/parsers/mainflux"
 	"github.com/influxdata/telegraf/plugins/parsers/json"
 	"github.com/influxdata/telegraf/plugins/parsers/logfmt"
 	"github.com/influxdata/telegraf/plugins/parsers/nagios"
@@ -320,7 +321,7 @@ func NewInfluxParser() (Parser, error) {
 	return influx.NewParser(handler), nil
 }
 func NewMflxParser() (Parser, error) {
-	handler := influx.NewMetricHandler()
+	handler := mainflux.NewMetricHandler()
 	return mainflux.NewParser(handler), nil
 }
 
