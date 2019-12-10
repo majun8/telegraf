@@ -12,7 +12,6 @@ import (
 	"github.com/influxdata/telegraf/plugins/parsers/graphite"
 	"github.com/influxdata/telegraf/plugins/parsers/grok"
 	"github.com/influxdata/telegraf/plugins/parsers/influx"
-	"github.com/influxdata/telegraf/plugins/parsers/mainflux"
 	"github.com/influxdata/telegraf/plugins/parsers/json"
 	"github.com/influxdata/telegraf/plugins/parsers/logfmt"
 	"github.com/influxdata/telegraf/plugins/parsers/nagios"
@@ -176,8 +175,6 @@ func NewParser(config *Config) (Parser, error) {
 			config.DataType, config.DefaultTags)
 	case "influx":
 		parser, err = NewInfluxParser()
-	case "mflx":
-		parser, err = NewMflxParser()
 	case "nagios":
 		parser, err = NewNagiosParser()
 	case "graphite":
@@ -319,10 +316,6 @@ func NewNagiosParser() (Parser, error) {
 func NewInfluxParser() (Parser, error) {
 	handler := influx.NewMetricHandler()
 	return influx.NewParser(handler), nil
-}
-func NewMflxParser() (Parser, error) {
-	handler := mainflux.NewMetricHandler()
-	return mainflux.NewParser(handler), nil
 }
 
 func NewGraphiteParser(

@@ -6,7 +6,9 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/gogo/protobuf/proto"
 	"github.com/influxdata/telegraf"
+	"github.com/mainflux/mainflux"
 )
 
 const (
@@ -66,7 +68,15 @@ func (p *Parser) Parse(input []byte) ([]telegraf.Metric, error) {
 	p.Lock()
 	defer p.Unlock()
 	metrics := make([]telegraf.Metric, 0)
-	p.machine.SetData(input)
+	msg := mainflux.Message{}
+	fmt.Println(fmt.Sprintf("%s", msg.GetSubtopic()))
+	fmt.Println(fmt.Sprintf("%s", string(msg.GetPayload())))
+	err := proto.Unmarshal(input, &msg)
+	if err != nil {
+		return nil, err
+	}
+	p.machine.SetData(msg.GetPayload())
+
 
 	for {
 		err := p.machine.Next()
