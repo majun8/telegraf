@@ -69,8 +69,8 @@ func (p *Parser) Parse(input []byte) ([]telegraf.Metric, error) {
 	defer p.Unlock()
 	metrics := make([]telegraf.Metric, 0)
 	msg := mainflux.Message{}
-	fmt.Println(fmt.Sprintf("%s", msg.GetSubtopic()))
-	fmt.Println(fmt.Sprintf("%s", string(msg.GetPayload())))
+	fmt.Println(fmt.Sprintf("Subtopic:%s", msg.GetSubtopic()))
+	fmt.Println(fmt.Sprintf("Payload:%s", string(msg.GetPayload())))
 	err := proto.Unmarshal(input, &msg)
 	if err != nil {
 		return nil, err
