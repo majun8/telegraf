@@ -8,7 +8,6 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/influxdata/telegraf"
-	"github.com/mainflux/mainflux"
 )
 
 const (
@@ -67,11 +66,12 @@ func NewSeriesParser(handler *MetricHandler) *Parser {
 func (p *Parser) Parse(input []byte) ([]telegraf.Metric, error) {
 	p.Lock()
 	defer p.Unlock()
-	m := mainflux.Message{}
+	m := Message{}
 	err := proto.Unmarshal(input, &m)
 	if err != nil {
 		return nil, err
 	}
+
 	fmt.Println("Topic: %v", m)
 
 	metrics := make([]telegraf.Metric, 0)
