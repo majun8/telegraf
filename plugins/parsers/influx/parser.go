@@ -68,14 +68,12 @@ func (p *Parser) Parse(input []byte) ([]telegraf.Metric, error) {
 	defer p.Unlock()
 	m := Message{}
 	err := proto.Unmarshal(input, &m)
-	if err != nil {
-		return nil, err
+	p.machine.SetData(input)
+	if err == nil {
+		p.machine.SetData(m.Payload)
 	}
 
-	fmt.Println("Topic: %v", m)
-
 	metrics := make([]telegraf.Metric, 0)
-	p.machine.SetData(input)
 
 	for {
 		err := p.machine.Next()
