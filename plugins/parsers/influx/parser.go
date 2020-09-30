@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gogo/protobuf/proto"
 	"github.com/influxdata/telegraf"
 )
 
@@ -89,8 +90,14 @@ func (h *Parser) SetTimeFunc(f TimeFunc) {
 func (p *Parser) Parse(input []byte) ([]telegraf.Metric, error) {
 	p.Lock()
 	defer p.Unlock()
-	metrics := make([]telegraf.Metric, 0)
+	m := Message{}
+	err := proto.Unmarshal(input, &m)
 	p.machine.SetData(input)
+	if err == nil {
+		p.machine.SetData(m.Payload)
+	}
+
+	metrics := make([]telegraf.Metric, 0)
 
 	for {
 		err := p.machine.Next()
