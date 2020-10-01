@@ -11,6 +11,7 @@ import (
 	"github.com/influxdata/telegraf/plugins/inputs"
 	"github.com/influxdata/telegraf/plugins/parsers"
 	"github.com/nats-io/nats.go"
+	"google.golang.org/protobuf/proto"
 )
 
 var (
@@ -175,7 +176,12 @@ func (n *natsConsumer) Start(acc telegraf.Accumulator) error {
 
 		n.in = make(chan *nats.Msg, 1000)
 		for _, subj := range n.Subjects {
+
 			sub, err := n.conn.QueueSubscribe(subj, n.QueueGroup, func(m *nats.Msg) {
+				mfxMsg := Message{}
+				_ = proto.Unmarshal(m.Data, &mfxMsg)
+				fmt.Println(string(mfxMsg.Payload))
+				m.Data = mfxMsg.Payload
 				n.in <- m
 			})
 			if err != nil {
@@ -232,13 +238,14 @@ func (n *natsConsumer) receiver(ctx context.Context) {
 				<-sem
 				<-sem
 			case msg := <-n.in:
+				fmt.Println(string(msg.Data))
 				metrics, err := n.parser.Parse(msg.Data)
 				if err != nil {
 					n.Log.Errorf("Subject: %s, error: %s", msg.Subject, err.Error())
 					<-sem
 					continue
 				}
-
+				fmt.Println(metrics[0].Fields())
 				n.acc.AddTrackingMetricGroup(metrics)
 			}
 		}
