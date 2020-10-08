@@ -2,16 +2,17 @@ package natsconsumer
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"sync"
 
+	proto "github.com/golang/protobuf/proto"
 	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/plugins/common/tls"
 	"github.com/influxdata/telegraf/plugins/inputs"
 	"github.com/influxdata/telegraf/plugins/parsers"
 	"github.com/nats-io/nats.go"
-	"google.golang.org/protobuf/proto"
 )
 
 var (
@@ -181,7 +182,21 @@ func (n *natsConsumer) Start(acc telegraf.Accumulator) error {
 				mfxMsg := Message{}
 				_ = proto.Unmarshal(m.Data, &mfxMsg)
 				fmt.Println(string(mfxMsg.Payload))
-				m.Data = mfxMsg.Payload
+				e := []map[string]interface{}{}
+				if err := json.Unmarshal(mfxMsg.Payload, &e); err != nil {
+					fmt.Println("error: " + err.Error())
+					return
+				}
+				for _, el := range e {
+					el["publisher"] = mfxMsg.Publisher
+					el["channel"] = mfxMsg.Channel
+				}
+
+				b, err := json.Marshal(e)
+				if err != nil {
+					return
+				}
+				m.Data = b
 				n.in <- m
 			})
 			if err != nil {
