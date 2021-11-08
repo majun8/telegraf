@@ -144,7 +144,7 @@ func (m *MQTT) Write(metrics []telegraf.Metric) error {
 	if !ok {
 		hostname = ""
 	}
-
+	fmt.Println("Writing")
 	metricsmap := make(map[string][]telegraf.Metric)
 
 	for _, metric := range metrics {
@@ -157,9 +157,8 @@ func (m *MQTT) Write(metrics []telegraf.Metric) error {
 		}
 
 		t = append(t, metric.Name())
-		topic := strings.Join(t, "/")
-
 		t = append(t, "json")
+		topic := strings.Join(t, "/")
 
 		if m.BatchMessage {
 			metricsmap[topic] = append(metricsmap[topic], metric)
