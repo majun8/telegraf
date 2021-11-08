@@ -159,6 +159,8 @@ func (m *MQTT) Write(metrics []telegraf.Metric) error {
 		t = append(t, metric.Name())
 		topic := strings.Join(t, "/")
 
+		t = append(t, "json")
+
 		if m.BatchMessage {
 			metricsmap[topic] = append(metricsmap[topic], metric)
 		} else {
